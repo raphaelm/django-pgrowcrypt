@@ -23,6 +23,10 @@ Keep in mind that the actual encryption and decryption is performed in the datab
 in plain text, so this requires the connection to the database to be either local or encrypted and requires you to trust the
 database administrator.
 
+Further limitations:
+
+* Works only on PostgreSQL (obviously)
+
 Usage
 -----
 

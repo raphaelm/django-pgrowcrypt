@@ -1,15 +1,18 @@
 from django.core import checks
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
-from django.db.models.expressions import Col
+from django.db.models.expressions import Col, Expression, Func, Value
 from django.utils.functional import cached_property
 
 
-class EncryptionValueWrapper:
+class EncryptionValueWrapper(Func):
 
-    def __init__(self, value, key):
+    def __init__(self, value, key, **extra):
         self.value = value
         self.key = key
+        if not isinstance(value, Expression):
+            value = Value(value)
+        super().__init__(value, **extra)
 
     def __str__(self):
         return self.value
@@ -18,7 +21,15 @@ class EncryptionValueWrapper:
         return "EncryptionValueWrapper(%r, key)" % self.value
 
     def as_sql(self, compiler, connection):
-        return "pgp_sym_encrypt(%s::text, %s)", [self.value, self.key]
+        sql_parts = []
+        params = []
+        for arg in self.source_expressions:
+            arg_sql, arg_params = compiler.compile(arg)
+            sql_parts.append(arg_sql)
+            params.extend(arg_params)
+
+        params.append(self.key)
+        return "pgp_sym_encrypt({}::text, %s)".format(', '.join(sql_parts)), params
 
 
 class EncryptedField(models.Field):
@@ -96,7 +107,7 @@ class DecryptedCol(Col):
             sql=sql
         )
         params = list(params)
-        params.append(getattr(connection, '_pgcolcrypt_key', ''))
+        params.append(getattr(connection, '_pgcolcrypt_key', '') or ' ')
         return decrypt_sql, tuple(params)
 
 
