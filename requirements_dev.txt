@@ -1,0 +1,12 @@
+pytest
+pytest-django
+tox
+coverage
+codecov
+sphinx
+sphinx-autobuild
+isort
+flake8
+lxml>=4.2.4
+html5lib
+psycopg2
