@@ -3,14 +3,14 @@ Row-level encryption based on pgcrypto for Django
 
 **WARNING:** This is an experiment including some nasty ORM hacks and we do not yet recommend to use it in production.
 
-.. image:: https://img.shields.io/pypi/v/django-pgcolcrypt.svg
-   :target: https://pypi.python.org/pypi/django-pgcolcrypt
+.. image:: https://img.shields.io/pypi/v/django-pgrowcrypt.svg
+   :target: https://pypi.python.org/pypi/django-pgrowcrypt
 
-.. image:: https://travis-ci.com/raphaelm/django-pgcolcrypt.svg?branch=master
-   :target: https://travis-ci.com/raphaelm/django-pgcolcrypt
+.. image:: https://travis-ci.com/raphaelm/django-pgrowcrypt.svg?branch=master
+   :target: https://travis-ci.com/raphaelm/django-pgrowcrypt
 
-.. image:: https://codecov.io/gh/raphaelm/django-pgcolcrypt/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/raphaelm/django-pgcolcrypt
+.. image:: https://codecov.io/gh/raphaelm/django-pgrowcrypt/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/raphaelm/django-pgrowcrypt
 
 
 This allows the encryption of values in specific columns using symmetric cryptography with the ``pgcrypto`` extension.

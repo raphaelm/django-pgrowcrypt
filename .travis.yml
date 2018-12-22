@@ -1,14 +1,9 @@
 language: python
 install:
   - pip install tox
-dist: trusty
-sudo: required
-before_script:
-  - ./.travis-install-db.sh
 script:
   - tox
 services:
-  - docker
   - postgresql
 matrix:
   include:
@@ -27,5 +22,5 @@ matrix:
     - python: 3.6
       env: TOXENV=style
 addons:
-  postgresql: "9.4"
+  postgresql: "9.6"
 

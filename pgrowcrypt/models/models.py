@@ -19,8 +19,8 @@ class EncryptedModel(models.Model):
     @classmethod
     def from_db(cls, db, field_names, values):
         v = super().from_db(db, field_names, values)
-        if hasattr(connections[db], '_pgcolcrypt_key'):
-            v.__key = connections[db]._pgcolcrypt_key
+        if hasattr(connections[db], '_pgrowcrypt_key'):
+            v.__key = connections[db]._pgrowcrypt_key
         return v
 
     def refresh_from_db(self, using=None, fields=None):

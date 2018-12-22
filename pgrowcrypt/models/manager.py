@@ -8,15 +8,15 @@ from .fields import EncryptedField, EncryptionValueWrapper
 
 @contextmanager
 def query_key(connection, key):
-    if getattr(connection, '_pgcolcrypt_key', None):
+    if getattr(connection, '_pgrowcrypt_key', None):
         # be re-entry safe (required for prefetch_related)
         yield
         return
-    connection._pgcolcrypt_key = key
+    connection._pgrowcrypt_key = key
     try:
         yield
     finally:
-        del connection._pgcolcrypt_key
+        del connection._pgrowcrypt_key
 
 
 class EncryptedColumnsQuerySet(QuerySet):

@@ -13,7 +13,7 @@ except:
     long_description = ''
 
 try:
-    from pgcolcrypt import version
+    from pgrowcrypt import version
 except ImportError:
     version = '?'
 

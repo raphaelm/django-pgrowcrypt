@@ -80,14 +80,14 @@ class EncryptedField(models.Field):
             errors.append(
                 checks.Error(
                     'Do not use EncryptedField types on a model that does not inherit from EncryptedModel.',
-                    id='pgcolcrypt.E001',
+                    id='pgrowcrypt.E001',
                 ),
             )
         if '_key' in self.model._meta.fields:
             errors.append(
                 checks.Error(
                     'EncryptedModel subclasses should not have a field called "_key".',
-                    id='pgcolcrypt.E002',
+                    id='pgrowcrypt.E002',
                 ),
             )
         return errors
@@ -107,7 +107,7 @@ class DecryptedCol(Col):
             sql=sql
         )
         params = list(params)
-        params.append(getattr(connection, '_pgcolcrypt_key', '') or ' ')
+        params.append(getattr(connection, '_pgrowcrypt_key', '') or ' ')
         return decrypt_sql, tuple(params)
 
 
