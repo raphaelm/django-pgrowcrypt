@@ -22,7 +22,6 @@ class EncryptionValueWrapper:
 
 
 class EncryptedField(models.Field):
-    decrypt_sql_template = "pgp_sym_decrypt({sql}, '{key}')::{dbtype}"
 
     def __init__(self, *args, **kwargs):
         for k in ('primary_key', 'unique', 'db_index'):
@@ -46,8 +45,7 @@ class EncryptedField(models.Field):
         if output_field is None:
             output_field = self
         if alias != self.model._meta.db_table or output_field != self:
-            return DecryptedCol(alias, self, self.decrypt_sql_template,
-                                output_field)
+            return DecryptedCol(alias, self, output_field)
         else:
             return self.cached_col
 
@@ -56,7 +54,6 @@ class EncryptedField(models.Field):
         return DecryptedCol(
             self.model._meta.db_table,
             self,
-            self.decrypt_sql_template,
         )
 
     def check(self, **kwargs):
@@ -65,7 +62,7 @@ class EncryptedField(models.Field):
         return errors
 
     def _check_model_class(self):
-        from pgcolcrypt.models import EncryptedModel
+        from .models import EncryptedModel
 
         errors = []
         if not issubclass(self.model, EncryptedModel):
@@ -86,19 +83,21 @@ class EncryptedField(models.Field):
 
 
 class DecryptedCol(Col):
-    def __init__(self, alias, target, decrypt_sql_template, output_field=None):
-        self.decrypt_sql_template = decrypt_sql_template
+    decrypt_sql_template = "pgp_sym_decrypt({sql}, %s)::{dbtype}"
+
+    def __init__(self, alias, target, output_field=None):
         self.target = target
         super(DecryptedCol, self).__init__(alias, target, output_field)
 
     def as_sql(self, compiler, connection):
         sql, params = super(DecryptedCol, self).as_sql(compiler, connection)
         decrypt_sql = self.decrypt_sql_template.format(
-            key=getattr(connection, '_pgcolcrypt_key', ''),
             dbtype=self.target._get_base_db_type(connection),
             sql=sql
         )
-        return decrypt_sql, params
+        params = list(params)
+        params.append(getattr(connection, '_pgcolcrypt_key', ''))
+        return decrypt_sql, tuple(params)
 
 
 class EncryptedTextField(EncryptedField, models.TextField):
